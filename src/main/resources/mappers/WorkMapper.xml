@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zss.dao.WorkMapper">
+  <resultMap id="BaseResultMap" type="com.zss.pojo.Work">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="start_work" javaType="java.lang.String" jdbcType="VARCHAR"/>
+      <arg column="stop_work" javaType="java.lang.String" jdbcType="VARCHAR"/>
+      <arg column="create_time" javaType="java.util.Date" jdbcType="DATE" />
+      <arg column="uid" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+  <resultMap id="BaseResultWUR" type="com.zss.vo.WorkUserRoleVo">
+    <constructor>
+      <arg column="username" javaType="java.lang.String" jdbcType="VARCHAR"/>
+      <arg column="start_work" javaType="java.lang.String" jdbcType="VARCHAR"/>
+      <arg column="stop_work" javaType="java.lang.String" jdbcType="VARCHAR"/>
+      <arg column="create_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="role" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, start_work, stop_work, create_time, uid
+  </sql>
+  <sql id="Base_WORK_USER_ROLE">
+    u.username,w.start_work,w.stop_work,w.create_time,r.role
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from work_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from work_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zss.pojo.Work">
+    insert into work_tb (id, start_work, stop_work, 
+      create_time, uid)
+    values (#{id,jdbcType=INTEGER}, #{startWork,jdbcType=VARCHAR}, #{stopWork,jdbcType=VARCHAR},
+      #{createTime,jdbcType=DATE}, #{uid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zss.pojo.Work">
+    insert into work_tb
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="startWork != null">
+        start_work,
+      </if>
+      <if test="stopWork != null">
+        stop_work,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="startWork != null">
+        #{startWork,jdbcType=VARCHAR},
+      </if>
+      <if test="stopWork != null">
+        #{stopWork,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zss.pojo.Work">
+    update work_tb
+    <set>
+      <if test="startWork != null">
+        start_work = #{startWork,jdbcType=VARCHAR},
+      </if>
+      <if test="stopWork != null">
+        stop_work = #{stopWork,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zss.pojo.Work">
+    update work_tb
+    set start_work = #{startWork,jdbcType=VARCHAR},
+      stop_work = #{stopWork,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=DATE},
+      uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectSignToday" resultType="java.lang.Integer" parameterType="map">
+    select count(1)
+    from work_tb
+    where uid = #{userId}
+    and create_time = #{currentDate}
+  </select>
+  <insert id="insertSignIn" parameterType="map">
+    insert into work_tb (id, start_work,
+      create_time, uid)
+    values (default ,#{currentHour} ,#{currentDay},#{userId})
+  </insert>
+  <update id="updateSingOut" parameterType="map">
+    update work_tb
+    set
+      stop_work = #{currentHour}
+    where uid = #{userId}
+    and create_time = #{currentDay}
+  </update>
+  <select id="selectHistoryBySelective" resultMap="BaseResultWUR" parameterType="map">
+    select
+    <include refid="Base_WORK_USER_ROLE"/>
+    from user_tb u,work_tb w,role_tb r
+    where w.uid = u.id
+    and u.rid = r.id
+    <if test="choice == 'personal'">
+      and w.uid = #{userId}
+      order by create_time DESC
+    </if>
+    <if test="choice == 'all'">
+      and r.id &gt; (select rid from user_tb where id = #{userId})
+      order by create_time DESC
+    </if>
+  </select>
+</mapper>

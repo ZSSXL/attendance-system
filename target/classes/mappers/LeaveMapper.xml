@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zss.dao.LeaveMapper">
+  <resultMap id="BaseResultMap" type="com.zss.pojo.Leave">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="need_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="leave_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="back_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="DATE" />
+      <arg column="status" javaType="java.lang.String" jdbcType="VARCHAR"/>
+      <arg column="uid" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.zss.pojo.Leave">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="need_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="leave_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="back_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="DATE" />
+      <arg column="status" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="uid" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="reason" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapLUR" type="com.zss.vo.LeaveUserRoleVo">
+    <constructor>
+      <arg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="need_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="leave_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="back_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="create_time" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="status" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="reason" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+      <arg column="role" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="username" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, need_time, leave_time, back_time, create_time, status, uid
+  </sql>
+  <sql id="Blob_Column_List">
+    reason
+  </sql>
+  <sql id="Leave_User_Role">
+    l.id,l.need_time,l.leave_time,l.back_time,l.reason,l.create_time,l.status,r.role,u.username
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from leave_tb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from leave_tb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zss.pojo.Leave">
+    insert into leave_tb (id, need_time, leave_time, 
+      back_time, create_time, status, 
+      uid, reason)
+    values (#{id,jdbcType=INTEGER}, #{needTime,jdbcType=VARCHAR}, #{leaveTime,jdbcType=VARCHAR},
+      #{backTime,jdbcType=VARCHAR}, now(), #{status,jdbcType=VARCHAR},
+      #{uid,jdbcType=INTEGER}, #{reason,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zss.pojo.Leave">
+    insert into leave_tb
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="needTime != null">
+        need_time,
+      </if>
+      <if test="leaveTime != null">
+        leave_time,
+      </if>
+      <if test="backTime != null">
+        back_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="needTime != null">
+        #{needTime,jdbcType=VARCHAR},
+      </if>
+      <if test="leaveTime != null">
+        #{leaveTime,jdbcType=VARCHAR},
+      </if>
+      <if test="backTime != null">
+        #{backTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zss.pojo.Leave">
+    update leave_tb
+    <set>
+      <if test="needTime != null">
+        need_time = #{needTime,jdbcType=VARCHAR},
+      </if>
+      <if test="leaveTime != null">
+        leave_time = #{leaveTime,jdbcType=VARCHAR},
+      </if>
+      <if test="backTime != null">
+        back_time = #{backTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zss.pojo.Leave">
+    update leave_tb
+    set need_time = #{needTime,jdbcType=VARCHAR},
+      leave_time = #{leaveTime,jdbcType=VARCHAR},
+      back_time = #{backTime,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=INTEGER},
+      reason = #{reason,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zss.pojo.Leave">
+    update leave_tb
+    set need_time = #{needTime,jdbcType=VARCHAR},
+      leave_time = #{leaveTime,jdbcType=VARCHAR},
+      back_time = #{backTime,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=DATE},
+      status = #{status,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectLeaveByUserId" resultMap="ResultMapLUR" parameterType="java.lang.Integer">
+    select
+    <include refid="Leave_User_Role"/>
+    from leave_tb l,role_tb r,user_tb u
+    where l.uid = u.id
+    and  u.rid = r.id
+    and l.status = 'untreated'
+    <if test="userId == 1">
+      and u.rid &gt;= (select rid from user_tb where id = #{userId})
+    </if>
+    <if test="userId > 1">
+      and u.rid &gt; (select rid from user_tb where id = #{userId})
+    </if>
+  </select>
+  <update id="updateStatusByLid" parameterType="map">
+    update leave_tb
+    set status = #{status}
+    where id = #{lid}
+  </update>
+  <select id="selectLeaveByUserIdRole" resultMap="ResultMapLUR" parameterType="map">
+    select
+    <include refid="Leave_User_Role"/>
+    from leave_tb l,role_tb r,user_tb u
+    where l.uid = u.id
+    and  u.rid = r.id
+    <if test="choice == 'personal'">
+      and l.uid = #{userId}
+    </if>
+  </select>
+</mapper>
