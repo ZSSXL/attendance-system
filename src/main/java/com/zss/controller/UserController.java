@@ -17,41 +17,63 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
-    @Autowired
-    private IUserService iUserService;
+    private final IUserService iUserService;
 
-    @RequestMapping(value = "login.do",method = RequestMethod.POST)
+    @Autowired
+    public UserController(IUserService iUserService) {
+        this.iUserService = iUserService;
+    }
+
+    /**
+     * 登录
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @param session  session
+     * @return ServerResponse
+     */
+    @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(String username, String password, HttpSession session){
+    public ServerResponse<User> login(String username, String password, HttpSession session) {
         ServerResponse<User> serverResponse = iUserService.login(username, password);
-        if(serverResponse.isSuccess()){
-            session.setAttribute(Const.CURRENT_USER,serverResponse.getData());
+        if (serverResponse.isSuccess()) {
+            session.setAttribute(Const.CURRENT_USER, serverResponse.getData());
         }
         return serverResponse;
     }
 
-    @RequestMapping(value = "personal_list.do",method = RequestMethod.GET)
+    /**
+     * 用户列表
+     *
+     * @param session session
+     * @return ServerResponse
+     */
+    @RequestMapping(value = "personal_list.do", method = RequestMethod.GET)
     @ResponseBody
-    public ServerResponse<UserRoleVo> personalList(HttpSession session){
+    public ServerResponse<UserRoleVo> personalList(HttpSession session) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
-        if(user == null){
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDesc());
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         }
         // 查询员工和部门
-        ServerResponse<UserRoleVo> serverResponse = iUserService.personalList(user.getUsername());
-        return serverResponse;
+        return iUserService.personalList(user.getUsername());
     }
 
-    @RequestMapping(value = "change_password.do",method = RequestMethod.POST)
+    /**
+     * 修改密码
+     *
+     * @param session     session
+     * @param newPassword 新密码
+     * @return ServerResponse
+     */
+    @RequestMapping(value = "change_password.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> changePassword(HttpSession session,String newPassword){
+    public ServerResponse<String> changePassword(HttpSession session, String newPassword) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
-        if(newPassword.length() < 6){
+        if (newPassword.length() < 6) {
             return ServerResponse.createByErrorMessage("密码字符长度不可少于六位");
         }
-        System.out.println("新密码"+newPassword+":旧密码"+user.getPassword());
         user.setPassword(newPassword);
-        ServerResponse<String> stringServerResponse = iUserService.changePassword(user);
-        return stringServerResponse;
+        return iUserService.changePassword(user);
     }
 }
