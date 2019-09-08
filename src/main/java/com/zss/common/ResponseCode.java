@@ -1,9 +1,9 @@
 package com.zss.common;
 
 /**
- * 枚举类
+ * @author ZSS
+ * @description 枚举类
  */
-
 public enum ResponseCode {
 
     SUCCESS(0,"SUCCESS"),

@@ -5,28 +5,26 @@ import org.joda.time.DateTime;
 import java.util.Date;
 
 /**
- *  时间类工具
+ * 时间类工具
  */
-
 public class DateFormat {
 
-    public static final String STANARD_FORMAT = "yyyy-MM-dd";
+    private static final String STANARD_FORMAT = "yyyy-MM-dd";
 
-    public static final String STANARD_RORMAT_DETAIL = "yyyy-MM-dd HH:mm:ss";
+    private static final String STANARD_RORMAT_DETAIL = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 获取当天日日期，并转换为yyyy-mm-dd的格式
-     * @return
+     *
+     * @return String
      */
-
-
-    public static String whichDay(){
+    public static String whichDay() {
         Date date = new Date();
         DateTime dateTime = new DateTime(date);
         return dateTime.toString(STANARD_FORMAT);
     }
 
-    public static String whichHour(){
+    public static String whichHour() {
         Date date = new Date();
         DateTime dateTime = new DateTime(date);
         return dateTime.toString(STANARD_RORMAT_DETAIL);
